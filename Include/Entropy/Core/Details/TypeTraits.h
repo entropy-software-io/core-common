@@ -7,15 +7,16 @@
 #include <functional>
 #include <type_traits>
 
-#ifndef ENTROPY_REMOVE_CONST_REF
-#define ENTROPY_REMOVE_CONST_REF(type) std::remove_cv_t<std::remove_reference_t<type>>
-#endif
-
 namespace Entropy
 {
 
 namespace Traits
 {
+
+template <typename T>
+using RemoveConstRef_t = std::remove_cv_t<std::remove_reference_t<T>>;
+
+//--------------
 
 template <typename T>
 class HasBaseClass
@@ -25,7 +26,7 @@ class HasBaseClass
     template <typename>
     static std::false_type Exists(...);
 
-    typedef decltype(Exists<ENTROPY_REMOVE_CONST_REF(T)>(nullptr)) ResultType; // NOLINT
+    typedef decltype(Exists<RemoveConstRef_t<T>>(nullptr)) ResultType; // NOLINT
 
 public:
     static constexpr bool cValue = ResultType::value;
@@ -45,7 +46,7 @@ struct BaseClassOf
 template <typename T>
 struct BaseClassOf<T, std::enable_if_t<HasBaseClass_v<T>>>
 {
-    using Type = typename ENTROPY_REMOVE_CONST_REF(T)::EntropySuper;
+    using Type = typename RemoveConstRef_t<T>::EntropySuper;
 };
 
 template <typename T, typename = void>
