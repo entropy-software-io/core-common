@@ -103,6 +103,26 @@ public:
 template <typename F, typename... Args>
 constexpr bool IsInvocable_v = details::IsInvocableImpl<F, Args...>::value;
 
+//==========================
+
+// Turns a type like "const T*&" into simply "T".
+
+template <typename T, typename = void>
+struct UnqualifiedType
+{
+    using Type = T;
+};
+
+template <typename T>
+struct UnqualifiedType<T, std::enable_if_t<std::is_const_v<T> || std::is_pointer_v<T> || std::is_reference_v<T> ||
+                                           std::is_rvalue_reference_v<T>>>
+{
+    using Type = typename UnqualifiedType<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>>::Type;
+};
+
+template <typename T>
+using UnqualifiedType_t = typename UnqualifiedType<T>::Type;
+
 } // namespace Traits
 
 } // namespace Entropy
