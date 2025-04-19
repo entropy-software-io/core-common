@@ -103,6 +103,31 @@ public:
 template <typename F, typename... Args>
 constexpr bool IsInvocable_v = details::IsInvocableImpl<F, Args...>::value;
 
+//------
+
+namespace details
+{
+
+template <typename TClass, typename TMethod, typename... TArgs>
+class IsClassMethodInvocableImpl
+{
+    template <typename UClass, typename UMethod, typename... UArgs>
+    static auto CanCall(UClass&& c, UMethod&& m) -> decltype((c.*m)(std::declval<UArgs>()...), std::true_type());
+    template <typename, typename...>
+    static std::false_type CanCall(...);
+
+    typedef decltype(CanCall<TClass, TMethod, TArgs...>(std::declval<TClass>(),
+                                                        std::declval<TMethod>())) ResultType; // NOLINT
+
+public:
+    static constexpr bool value = ResultType::value;
+};
+
+} // namespace details
+
+template <typename C, typename M, typename... Args>
+constexpr bool IsClassMethodInvocableImpl_v = details::IsClassMethodInvocableImpl<C, M, Args...>::value;
+
 //==========================
 
 // Turns a type like "const T*&" into simply "T".
