@@ -13,3 +13,13 @@
 #define ENTROPY_CONSTEXPR
 #endif
 #endif
+
+#if !defined(_MSC_VER) || defined(__clang__)
+#define ENTROPY_LIKELY(x) __builtin_expect(!!(x), true)
+#define ENTROPY_UNLIKELY(x) __builtin_expect(!!(x), false)
+#else
+#define ENTROPY_LIKELY(x) (x)
+#define ENTROPY_UNLIKELY(x) (x)
+#endif
+
+#define ENTROPY_LITERAL(...) __VA_ARGS__
