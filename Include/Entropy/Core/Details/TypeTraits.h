@@ -14,7 +14,7 @@ namespace Traits
 {
 
 template <typename T>
-using RemoveConstRef_t = std::remove_cv_t<std::remove_reference_t<T>>;
+using RemoveConstRef_t = typename std::remove_cv<typename std::remove_reference<T>::type>::type;
 
 //--------------
 
@@ -29,11 +29,13 @@ class HasBaseClass
     typedef decltype(Exists<RemoveConstRef_t<T>>(nullptr)) ResultType; // NOLINT
 
 public:
-    static constexpr bool cValue = ResultType::value;
+    static constexpr bool value = ResultType::value;
 };
 
+#if __cplusplus >= 201300
 template <class T>
-constexpr bool HasBaseClass_v = HasBaseClass<T>::cValue;
+constexpr bool HasBaseClass_v = HasBaseClass<T>::value;
+#endif
 
 //---------------
 
@@ -44,7 +46,7 @@ struct BaseClassOf
 };
 
 template <typename T>
-struct BaseClassOf<T, std::enable_if_t<HasBaseClass_v<T>>>
+struct BaseClassOf<T, typename std::enable_if<HasBaseClass<T>::value>::type>
 {
     using Type = typename RemoveConstRef_t<T>::EntropySuper;
 };
@@ -56,22 +58,22 @@ struct BaseClassWithQualifiersOf
 };
 
 template <typename T>
-struct BaseClassWithQualifiersOf<T,
-                                 std::enable_if_t<!std::is_const_v<T> && !std::is_reference_v<T> && HasBaseClass_v<T>>>
+struct BaseClassWithQualifiersOf<T, typename std::enable_if<!std::is_const<T>::value && !std::is_reference<T>::value &&
+                                                            HasBaseClass<T>::value>::type>
 {
     using Type = typename T::EntropySuper;
 };
 
 template <typename T>
-struct BaseClassWithQualifiersOf<const T, std::enable_if_t<HasBaseClass_v<T>>>
+struct BaseClassWithQualifiersOf<const T, typename std::enable_if<HasBaseClass<T>::value>::type>
 {
-    using Type = const typename BaseClassWithQualifiersOf<std::remove_const_t<T>>::Type;
+    using Type = const typename BaseClassWithQualifiersOf<typename std::remove_const<T>::type>::Type;
 };
 
 template <typename T>
-struct BaseClassWithQualifiersOf<T&, std::enable_if_t<HasBaseClass_v<T>>>
+struct BaseClassWithQualifiersOf<T&, typename std::enable_if<HasBaseClass<T>::value>::type>
 {
-    using Type = typename BaseClassWithQualifiersOf<std::remove_reference_t<T>>::Type&;
+    using Type = typename BaseClassWithQualifiersOf<typename std::remove_reference<T>::type>::Type&;
 };
 
 template <class T>
@@ -82,11 +84,8 @@ using BaseClassWithQualifiersOf_t = typename BaseClassWithQualifiersOf<T>::Type;
 
 //==========================
 
-namespace details
-{
-
 template <typename TFunc, typename... TArgs>
-class IsInvocableImpl
+class IsInvocable
 {
     template <typename UFunc, typename... UArgs>
     static auto CanCall(UFunc&& p) -> decltype(p(std::declval<UArgs>()...), std::true_type());
@@ -99,18 +98,15 @@ public:
     static constexpr bool value = ResultType::value;
 };
 
-} // namespace details
-
+#if __cplusplus >= 201300
 template <typename F, typename... Args>
-constexpr bool IsInvocable_v = details::IsInvocableImpl<F, Args...>::value;
+constexpr bool IsInvocable_v = IsInvocable<F, Args...>::value;
+#endif
 
 //------
 
-namespace details
-{
-
 template <typename TClass, typename TMethod, typename... TArgs>
-class IsClassMethodInvocableImpl
+class IsClassMethodInvocable
 {
     template <typename UClass, typename UMethod, typename... UArgs>
     static auto CanCall(UClass&& c, UMethod&& m) -> decltype((c.*m)(std::declval<UArgs>()...), std::true_type());
@@ -124,10 +120,10 @@ public:
     static constexpr bool value = ResultType::value;
 };
 
-} // namespace details
-
+#if __cplusplus >= 201300
 template <typename C, typename M, typename... Args>
-constexpr bool IsClassMethodInvocableImpl_v = details::IsClassMethodInvocableImpl<C, M, Args...>::value;
+constexpr bool IsClassMethodInvocable_v = IsClassMethodInvocable<C, M, Args...>::value;
+#endif
 
 //==========================
 
@@ -136,18 +132,20 @@ constexpr bool IsClassMethodInvocableImpl_v = details::IsClassMethodInvocableImp
 template <typename T, typename = void>
 struct UnqualifiedType
 {
-    using Type = T;
+    using type = T;
 };
 
 template <typename T>
-struct UnqualifiedType<T, std::enable_if_t<std::is_const_v<T> || std::is_pointer_v<T> || std::is_reference_v<T> ||
-                                           std::is_rvalue_reference_v<T>>>
+struct UnqualifiedType<T,
+                       typename std::enable_if<std::is_const<T>::value || std::is_pointer<T>::value ||
+                                               std::is_reference<T>::value || std::is_rvalue_reference<T>::value>::type>
 {
-    using Type = typename UnqualifiedType<std::remove_const_t<std::remove_pointer_t<std::remove_reference_t<T>>>>::Type;
+    using type = typename UnqualifiedType<typename std::remove_const<
+        typename std::remove_pointer<typename std::remove_reference<T>::type>::type>::type>::type;
 };
 
 template <typename T>
-using UnqualifiedType_t = typename UnqualifiedType<T>::Type;
+using UnqualifiedType_t = typename UnqualifiedType<T>::type;
 
 } // namespace Traits
 
