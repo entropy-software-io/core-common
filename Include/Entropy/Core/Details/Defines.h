@@ -22,4 +22,25 @@
 #define ENTROPY_UNLIKELY(x) (x)
 #endif
 
+#ifdef _MSC_VER
+#define ENTROPY_MSVC
+#else
+#undef ENTROPY_MSVC
+#endif
+
 #define ENTROPY_LITERAL(...) __VA_ARGS__
+
+namespace Entropy
+{
+
+using int8   = signed char;
+using byte   = unsigned char;
+using uint8  = byte;
+using int16  = short;
+using uint16 = unsigned short;
+using int32  = int;
+using uint32 = unsigned int;
+using int64  = long long;
+using uint64 = unsigned long long;
+
+} // namespace Entropy
