@@ -64,8 +64,10 @@ struct LogMessageDelimiter
         auto* __o = ::Entropy::Log::GetStream(::Entropy::LogLevel::Level);                                             \
         if (__o)                                                                                                       \
         {                                                                                                              \
-            (*__o) << ::Entropy::Traits::TypeNameOf<decltype(this)>{}() << "::" << __func__ << "(" << __LINE__         \
-                   << ") - " << msg << ::Entropy::details::LogMessageDelimiter();                                      \
+            (*__o) << ::Entropy::Traits::TypeNameOf<                                                                   \
+                          typename std::remove_const<typename std::remove_pointer<decltype(this)>::type>::type>{}()    \
+                   << "::" << __func__ << "(" << __LINE__ << ") - " << msg                                             \
+                   << ::Entropy::details::LogMessageDelimiter();                                                       \
         }                                                                                                              \
     }
 
