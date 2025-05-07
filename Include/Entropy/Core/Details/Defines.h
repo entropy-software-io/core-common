@@ -28,6 +28,47 @@
 #undef ENTROPY_MSVC
 #endif
 
+#ifdef _DEBUG
+#define ENTROPY_DEBUG
+#endif
+
+#ifdef ENTROPY_ENABLE_EXPORT
+#ifdef SMARTENGINE_WINDOWS
+#ifdef ENTROPY_BUILDING_DLL
+#define ENTROPY_EXPORT_INTERFACE __declspec(dllexport)
+#define ENTROPY_EXPORT_CLASS __declspec(dllexport)
+#define ENTROPY_EXPORT_FUNC __declspec(dllexport)
+#define ENTROPY_EXPORT_VAR __declspec(dllexport)
+#else
+#define ENTROPY_EXPORT_INTERFACE __declspec(dllimport)
+#define ENTROPY_EXPORT_CLASS __declspec(dllimport)
+#define ENTROPY_EXPORT_FUNC __declspec(dllimport)
+#define ENTROPY_EXPORT_VAR __declspec(dllimport)
+#endif
+#elif defined SMARTENGINE_LINUX
+#define ENTROPY_EXPORT_INTERFACE __attribute__((visibility("default")))
+#define ENTROPY_EXPORT_CLASS __attribute__((visibility("default")))
+#define ENTROPY_EXPORT_FUNC __attribute__((visibility("default")))
+#define ENTROPY_EXPORT_VAR __attribute__((visibility("default")))
+#elif defined ENTROPY_JAVASCRIPT
+#include <emscripten.h>
+#define ENTROPY_EXPORT_INTERFACE
+#define ENTROPY_EXPORT_CLASS
+#define ENTROPY_EXPORT_FUNC EMSCRIPTEN_KEEPALIVE
+#define ENTROPY_EXPORT_VAR
+#else
+#define ENTROPY_EXPORT_INTERFACE
+#define ENTROPY_EXPORT_CLASS
+#define ENTROPY_EXPORT_FUNC
+#define ENTROPY_EXPORT_VAR
+#endif
+#else // ENTROPY_ENABLE_EXPORT
+#define ENTROPY_EXPORT_INTERFACE
+#define ENTROPY_EXPORT_CLASS
+#define ENTROPY_EXPORT_FUNC
+#define ENTROPY_EXPORT_VAR
+#endif
+
 #define ENTROPY_LITERAL(...) __VA_ARGS__
 
 namespace Entropy
