@@ -147,6 +147,64 @@ struct UnqualifiedType<T,
 template <typename T>
 using UnqualifiedType_t = typename UnqualifiedType<T>::type;
 
+//============================
+
+template <typename T, typename = void>
+struct IsUnqualifiedType : std::true_type
+{
+};
+
+template <typename T>
+struct IsUnqualifiedType<T, typename std::enable_if<std::is_const<T>::value || std::is_pointer<T>::value ||
+                                                    std::is_reference<T>::value>::type> : std::false_type
+{
+};
+
+template <typename T>
+constexpr bool IsUnqualifiedType_v = IsUnqualifiedType<T>::value;
+
+template <typename T>
+constexpr bool IsQualifiedType_v = !IsUnqualifiedType_v<T>;
+
+//============================
+
+namespace details
+{
+
+template <typename T>
+struct CanCompareAgainstNull
+{
+private:
+    template <typename U>
+    static auto Exists(int) -> decltype(std::declval<U>() == nullptr, std::true_type{});
+
+    template <typename>
+    static std::false_type Exists(...);
+
+public:
+    static constexpr bool value = decltype(Exists<T>(0))::value;
+};
+
+template <typename T, typename = void>
+struct IsNullCheck
+{
+    inline bool operator()(const T& val) const { return (val == nullptr); }
+};
+
+template <typename T>
+struct IsNullCheck<T, typename std::enable_if<!CanCompareAgainstNull<T>::value>::type>
+{
+    inline constexpr bool operator()(const T& val) const { return false; }
+};
+
+} // namespace details
+
+template <typename T>
+inline bool IsNull(const T& val)
+{
+    return details::IsNullCheck<T>{}(val);
+}
+
 } // namespace Traits
 
 } // namespace Entropy
