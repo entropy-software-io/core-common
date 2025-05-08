@@ -160,11 +160,13 @@ struct IsUnqualifiedType<T, typename std::enable_if<std::is_const<T>::value || s
 {
 };
 
+#ifdef ENTROPY_CPP14
 template <typename T>
 constexpr bool IsUnqualifiedType_v = IsUnqualifiedType<T>::value;
 
 template <typename T>
 constexpr bool IsQualifiedType_v = !IsUnqualifiedType_v<T>;
+#endif
 
 //============================
 
@@ -208,3 +210,30 @@ inline bool IsNull(const T& val)
 } // namespace Traits
 
 } // namespace Entropy
+
+#ifndef ENTROPY_CPP14
+namespace std
+{
+template <class _Ty, _Ty... _Vals>
+struct integer_sequence
+{ // sequence of integer parameters
+    static_assert(is_integral<_Ty>::value, "integer_sequence<T, I...> requires T to be an integral type.");
+
+    using value_type = _Ty;
+
+    static constexpr size_t size() noexcept { return sizeof...(_Vals); }
+};
+
+template <class _Ty, _Ty _Size>
+using make_integer_sequence = __make_integer_seq<integer_sequence, _Ty, _Size>;
+
+template <size_t... _Vals>
+using index_sequence = integer_sequence<size_t, _Vals...>;
+
+template <size_t _Size>
+using make_index_sequence = make_integer_sequence<size_t, _Size>;
+
+template <class... _Types>
+using index_sequence_for = make_index_sequence<sizeof...(_Types)>;
+} // namespace std
+#endif

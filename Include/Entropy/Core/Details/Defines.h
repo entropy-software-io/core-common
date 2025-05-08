@@ -6,8 +6,25 @@
 
 #include <type_traits>
 
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201103L) || __cplusplus >= 201103L)
+#define ENTROPY_CPP11
+#else
+#define __ENTROPY_STRINGIFY2(x) #x
+#define __ENTROPY_STRINGIFY(x) __ENTROPY_STRINGIFY2(x)
+#pragma message("C++ 11 is required. Current language version: " __ENTROPY_STRINGIFY(__cplusplus))
+#error C++ 11 is required
+#endif
+
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201402L) || __cplusplus >= 201402L)
+#define ENTROPY_CPP14
+#endif
+
+#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+#define ENTROPY_CPP17
+#endif
+
 #ifndef ENTROPY_CONSTEXPR
-#if __cplusplus >= 201703L
+#if ENTROPY_CPP17
 #define ENTROPY_CONSTEXPR constexpr
 #else
 #define ENTROPY_CONSTEXPR

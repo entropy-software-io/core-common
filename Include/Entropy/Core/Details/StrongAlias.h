@@ -28,29 +28,27 @@ struct StrongAlias
     constexpr StrongAlias(const TValue& value) noexcept
         : _value(value)
     {
-        AssertSize();
     }
 
     constexpr StrongAlias(TValue&& value) noexcept(std::is_nothrow_move_constructible<TValue>::value)
         : _value(std::move(value))
     {
-        AssertSize();
     }
 
-    inline constexpr operator TValue&() noexcept { return _value; }
+    inline operator TValue&() noexcept { return _value; }
     inline constexpr operator const TValue&() const noexcept { return _value; }
 
     inline constexpr const TValue& GetValue() const noexcept { return _value; }
-    inline constexpr TValue& GetValueRW() noexcept { return _value; }
-    inline constexpr void SetValue(const TValue& val) { _value = val; }
+    inline TValue& GetValueRW() noexcept { return _value; }
+    inline void SetValue(const TValue& val) { _value = val; }
 
     inline friend void swap(StrongAlias& a, StrongAlias& b) noexcept
     {
         std::swap(static_cast<TValue&>(a), static_cast<TValue&>(b));
     }
 
-    inline constexpr StrongAlias& operator=(const StrongAlias&) noexcept = default;
-    inline constexpr StrongAlias& operator=(StrongAlias&&) noexcept      = default;
+    inline StrongAlias& operator=(const StrongAlias&) noexcept = default;
+    inline StrongAlias& operator=(StrongAlias&&) noexcept      = default;
 
     inline constexpr bool operator==(const StrongAlias& other) const noexcept { return (_value == other._value); }
     inline constexpr bool operator!=(const StrongAlias& other) const noexcept { return !(*this == other); }
@@ -68,11 +66,6 @@ struct StrongAlias
 
 protected:
     TValue _value{};
-
-    static constexpr void AssertSize()
-    {
-        static_assert(sizeof(StrongAlias) == sizeof(TValue), "Type size is not what was expected");
-    }
 };
 
 template <typename T, typename = void>

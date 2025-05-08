@@ -7,10 +7,10 @@
 namespace Entropy
 {
 
-inline constexpr unsigned int StringHash(const char* key, int len, unsigned int seed = 0)
+inline ENTROPY_CONSTEXPR unsigned int StringHash(const char* key, int len, unsigned int seed = 0)
 {
-    const unsigned int m = 0x5bd1e995;
-    const int r          = 24;
+    constexpr unsigned int m = 0x5bd1e995;
+    constexpr int r          = 24;
 
     unsigned int h = seed ^ len;
 
