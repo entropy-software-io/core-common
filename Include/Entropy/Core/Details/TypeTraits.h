@@ -136,12 +136,11 @@ struct UnqualifiedType
 };
 
 template <typename T>
-struct UnqualifiedType<T,
-                       typename std::enable_if<std::is_const<T>::value || std::is_pointer<T>::value ||
-                                               std::is_reference<T>::value || std::is_rvalue_reference<T>::value>::type>
+struct UnqualifiedType<T, typename std::enable_if<std::is_const<T>::value || std::is_pointer<T>::value ||
+                                                  std::is_array<T>::value || std::is_reference<T>::value>::type>
 {
-    using type = typename UnqualifiedType<typename std::remove_const<
-        typename std::remove_pointer<typename std::remove_reference<T>::type>::type>::type>::type;
+    using type = typename UnqualifiedType<typename std::remove_const<typename std::remove_all_extents<
+        typename std::remove_pointer<typename std::remove_reference<T>::type>::type>::type>::type>::type;
 };
 
 template <typename T>
@@ -156,7 +155,8 @@ struct IsUnqualifiedType : std::true_type
 
 template <typename T>
 struct IsUnqualifiedType<T, typename std::enable_if<std::is_const<T>::value || std::is_pointer<T>::value ||
-                                                    std::is_reference<T>::value>::type> : std::false_type
+                                                    std::is_array<T>::value || std::is_reference<T>::value>::type>
+    : std::false_type
 {
 };
 
