@@ -1,0 +1,50 @@
+// Copyright (c) Entropy Software LLC
+// This file is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
+
+#pragma once
+
+#include <memory>
+#include "Entropy/Core/Log.h"
+@ENTROPY_CORE_DEFAULT_ALLOCATOR_INCLUDES@
+
+namespace Entropy
+{
+namespace Traits
+{
+
+template <typename T, typename = void>
+struct AllocatorTraits
+{
+    using Allocator = @ENTROPY_CORE_DEFAULT_ALLOCATOR@;
+};
+
+}  // namespace Traits
+
+struct AllocatorOps
+{
+    template <typename T, typename... TArgs>
+    inline static T* CreateInstance(TArgs&&... args)
+    {
+        typename Traits::AllocatorTraits<T>::Allocator alloc;
+        T* ret = std::allocator_traits<decltype(alloc)>::allocate(alloc, 1);
+        ENTROPY_CHECK_RETURN_VAL_FUNC(ret, nullptr, "Failed to allocate object");
+
+        std::allocator_traits<decltype(alloc)>::construct(alloc, ret, std::forward<TArgs>(args)...);
+
+        return ret;
+    }
+
+    template <typename T>
+    inline static void DestroyInstance(T* ptr)
+    {
+        if (ptr)
+        {
+            typename Traits::AllocatorTraits<T>::Allocator alloc;
+            std::allocator_traits<decltype(alloc)>::destroy(alloc, ptr);
+            std::allocator_traits<decltype(alloc)>::deallocate(alloc, ptr, 1);
+        }
+    }
+};
+
+} // namespace Entropy
