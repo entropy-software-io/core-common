@@ -20,6 +20,10 @@ namespace Entropy
 namespace details
 {
 
+/// <remarks>
+/// We use the base STL because this is a "low-level" component and we want to avoid circular re-entrancy when things
+/// fail
+/// </remarks>
 class LogBuffer : public std::stringbuf
 {
     typedef std::stringbuf Super;
