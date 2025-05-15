@@ -41,7 +41,10 @@ configure_file(Config/VectorOps.h.in Include/Entropy/Core/Details/VectorOps.h)
 configure_file(Config/MapOps.h.in Include/Entropy/Core/Details/MapOps.h)
 configure_file(Config/FunctionTraits.h.in Include/Entropy/Core/Details/FunctionTraits.h)
 
-set(CORE_COMMON_SRC "Src/Log.cpp")
+set(CORE_COMMON_SRC 
+    Src/Log.cpp
+    Src/TypeId.cpp
+)
 add_library(entropy-core-common OBJECT ${CORE_COMMON_SRC})
 add_library(entropy::core::common ALIAS entropy-core-common)
 
