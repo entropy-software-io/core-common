@@ -1,0 +1,27 @@
+// Copyright (c) Entropy Software LLC
+// This file is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
+
+#pragma once
+
+#cmakedefine ENTROPY_CORE_USE_CUSTOM_FUNCTION_TYPE
+
+#ifdef ENTROPY_CORE_USE_CUSTOM_FUNCTION_TYPE
+@ENTROPY_CORE_CUSTOM_FUNCTION_INCLUDES@
+#else
+#include <functional>
+#endif
+
+namespace Entropy
+{
+namespace Traits
+{
+
+template <typename T>
+struct FunctionTraits
+{
+    using Function = @ENTROPY_CORE_CUSTOM_FUNCTION@;
+};
+
+} // namespace Traits
+} // namespace Entropy

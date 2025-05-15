@@ -1,7 +1,7 @@
 # Default allocator config
-if ("${ENTROPY_CORE_DEFAULT_ALLOCATOR}" STREQUAL "")
-    set (ENTROPY_CORE_DEFAULT_ALLOCATOR_INCLUDES "")
-    set (ENTROPY_CORE_DEFAULT_ALLOCATOR "std::allocator<T>")
+if ("${ENTROPY_CORE_CUSTOM_ALLOCATOR}" STREQUAL "")
+    set (ENTROPY_CORE_CUSTOM_ALLOCATOR_INCLUDES "")
+    set (ENTROPY_CORE_CUSTOM_ALLOCATOR "std::allocator<T>")
 endif()
 
 # Default string type config
@@ -25,11 +25,21 @@ else()
     set (ENTROPY_CORE_USE_CUSTOM_MAP_TYPE ON)
 endif()
 
+# Default function type config
+if ("${ENTROPY_CORE_CUSTOM_FUNCTION}" STREQUAL "")
+    set (ENTROPY_CORE_USE_CUSTOM_FUNCTION_TYPE OFF)
+    set (ENTROPY_CORE_CUSTOM_FUNCTION_INCLUDES "")
+    set (ENTROPY_CORE_CUSTOM_FUNCTION "std::function<T>")
+else()
+    set (ENTROPY_CORE_USE_CUSTOM_FUNCTION_TYPE ON)
+endif()
+
 # Configure allocator and containers
 configure_file(Config/AllocatorTraits.h.in Include/Entropy/Core/Details/AllocatorTraits.h)
 configure_file(Config/StringOps.h.in Include/Entropy/Core/Details/StringOps.h)
 configure_file(Config/VectorOps.h.in Include/Entropy/Core/Details/VectorOps.h)
 configure_file(Config/MapOps.h.in Include/Entropy/Core/Details/MapOps.h)
+configure_file(Config/FunctionTraits.h.in Include/Entropy/Core/Details/FunctionTraits.h)
 
 set(CORE_COMMON_SRC "Src/Log.cpp")
 add_library(entropy-core-common OBJECT ${CORE_COMMON_SRC})

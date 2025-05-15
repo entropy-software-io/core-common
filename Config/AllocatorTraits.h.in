@@ -6,7 +6,7 @@
 
 #include <memory>
 #include "Entropy/Core/Log.h"
-@ENTROPY_CORE_DEFAULT_ALLOCATOR_INCLUDES@
+@ENTROPY_CORE_CUSTOM_ALLOCATOR_INCLUDES@
 
 namespace Entropy
 {
@@ -16,7 +16,7 @@ namespace Traits
 template <typename T, typename = void>
 struct AllocatorTraits
 {
-    using Allocator = @ENTROPY_CORE_DEFAULT_ALLOCATOR@;
+    using Allocator = @ENTROPY_CORE_CUSTOM_ALLOCATOR@;
 };
 
 }  // namespace Traits
