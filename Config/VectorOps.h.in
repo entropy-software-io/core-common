@@ -22,7 +22,7 @@ struct VectorOps
     using VectorType = std::vector<T, typename Traits::AllocatorTraits<T>::Allocator>;
 
     template <typename T>
-    inline static int GetCount(const VectorType<T>& vector)
+    inline static int GetCount(const VectorType<T>& vector) noexcept
     {
         return (int)vector.size();
     }

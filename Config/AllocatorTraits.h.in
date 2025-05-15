@@ -24,7 +24,7 @@ struct AllocatorTraits
 struct AllocatorOps
 {
     template <typename T, typename... TArgs>
-    inline static T* CreateInstance(TArgs&&... args)
+    inline static T* CreateInstance(TArgs&&... args) noexcept
     {
         typename Traits::AllocatorTraits<T>::Allocator alloc;
         T* ret = std::allocator_traits<decltype(alloc)>::allocate(alloc, 1);
@@ -36,7 +36,7 @@ struct AllocatorOps
     }
 
     template <typename T>
-    inline static void DestroyInstance(T* ptr)
+    inline static void DestroyInstance(T* ptr) noexcept
     {
         if (ptr)
         {
