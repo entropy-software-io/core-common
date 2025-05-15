@@ -10,6 +10,8 @@
 @ENTROPY_CORE_CUSTOM_STRING_INCLUDES@
 #else
 
+#include <string>
+
 namespace Entropy
 {
 

@@ -1,0 +1,39 @@
+// Copyright (c) Entropy Software LLC
+// This file is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
+
+#pragma once
+
+#cmakedefine ENTROPY_CORE_USE_CUSTOM_VECTOR_TYPE
+
+#ifdef ENTROPY_CORE_USE_CUSTOM_VECTOR_TYPE
+@ENTROPY_CORE_CUSTOM_VECTOR_INCLUDES@
+#else
+
+#include <vector>
+#include "Entropy/Core/Details/AllocatorTraits.h"
+
+namespace Entropy
+{
+
+struct VectorOps
+{
+    template <typename T>
+    using VectorType = std::vector<T, typename Traits::AllocatorTraits<T>::Allocator>;
+
+    template <typename T>
+    inline static void Add(VectorType<T>& vector, const T& value)
+    {
+        vector.push_back(value);
+    }
+
+    template <typename T>
+    inline static void Add(VectorType<T>& vector, T&& value)
+    {
+        vector.push_back(std::move(value));
+    }    
+};
+
+}
+
+#endif
