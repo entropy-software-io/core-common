@@ -23,6 +23,40 @@ struct MapOps
                                        typename Traits::AllocatorTraits<std::pair<const TKey, TValue>>::Allocator>;
 
     template <typename TKey, typename TValue>
+    inline static int GetCount(const MapType<TKey, TValue>& map)
+    {
+        return (int)map.size();
+    }
+
+    template <typename TKey, typename TValue>
+    inline static bool TryGetValue(const MapType<TKey, TValue>& map, const TKey& key, TValue* outValue)
+    {
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            return false;
+        }
+
+        *outValue = it->second;
+
+        return true;
+    }
+
+    template <typename TKey, typename TValue>
+    inline static bool TryGetValue(const MapType<TKey, TValue>& map, const TKey& key, const TValue** outValue)
+    {
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            return false;
+        }
+
+        *outValue = &it->second;
+
+        return true;
+    }
+
+    template <typename TKey, typename TValue>
     inline static void AddUnique(MapType<TKey, TValue>& map, const TKey& key, const TValue& value)
     {
         map.emplace(key, value);

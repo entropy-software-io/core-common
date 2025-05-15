@@ -22,6 +22,18 @@ struct VectorOps
     using VectorType = std::vector<T, typename Traits::AllocatorTraits<T>::Allocator>;
 
     template <typename T>
+    inline static int GetCount(const VectorType<T>& vector)
+    {
+        return (int)vector.size();
+    }
+
+    template <typename T>
+    inline static const T& At(const VectorType<T>& vector, int index)
+    {
+        return vector[index];
+    }
+
+    template <typename T>
     inline static void Add(VectorType<T>& vector, const T& value)
     {
         vector.push_back(value);
