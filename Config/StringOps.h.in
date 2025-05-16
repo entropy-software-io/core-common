@@ -1,0 +1,61 @@
+// Copyright (c) Entropy Software LLC
+// This file is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
+
+#pragma once
+
+#cmakedefine ENTROPY_CORE_USE_CUSTOM_STRING_TYPE
+
+#ifdef ENTROPY_CORE_USE_CUSTOM_STRING_TYPE
+@ENTROPY_CORE_CUSTOM_STRING_INCLUDES@
+#else
+
+#include <string>
+
+namespace Entropy
+{
+
+struct StringOps
+{
+    using StringType = std::string;
+
+    inline static  const char* GetStr(const StringType& str) { return str.c_str(); }
+    inline static int GetLength(const StringType& str) { return (int)str.length(); }
+    inline static int FindFirst(const StringType& str, char value)
+    {
+        auto ret = str.find(value);
+        if (ret == StringType::npos)
+        {
+            return -1;
+        }
+        return (int)ret;
+    }
+    inline static int FindLast(const StringType& str, char value)
+    {
+        auto ret = str.rfind(value);
+        if (ret == StringType::npos)
+        {
+            return -1;
+        }
+        return (int)ret;
+    }
+    inline static void SubString(StringType& str, int start, int count) { str = str.substr(start, count); }
+    inline static void Replace(StringType& str, const StringType& find, const StringType& replacement)
+    {
+        if (GetLength(find) != 0)
+        {
+            auto pos = str.find(find, 0);
+            while (pos != StringType::npos)
+            {
+                str.replace(pos, find.length(), replacement);
+
+                pos = str.find(find, pos + replacement.length());
+            }
+        }
+    }
+    inline static void Append(StringType& str, const StringType& other) { str += other; }
+};
+
+}
+
+#endif
