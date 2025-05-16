@@ -40,10 +40,10 @@ inline ENTROPY_CONSTEXPR unsigned int StringHash(const char* key, int len, unsig
     {
     case 3:
         h ^= ((byte)data[2]) << 16;
-        [[fallthrough]];
+        ENTROPY_FALLTHROUGH
     case 2:
         h ^= ((byte)data[1]) << 8;
-        [[fallthrough]];
+        ENTROPY_FALLTHROUGH
     case 1:
         h ^= ((byte)data[0]);
         h *= m;

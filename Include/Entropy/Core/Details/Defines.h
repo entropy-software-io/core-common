@@ -24,7 +24,7 @@
 #endif
 
 #ifndef ENTROPY_CONSTEXPR
-#if ENTROPY_CPP17
+#ifdef ENTROPY_CPP17
 #define ENTROPY_CONSTEXPR constexpr
 #else
 #define ENTROPY_CONSTEXPR
@@ -87,6 +87,12 @@
 #endif
 
 #define ENTROPY_LITERAL(...) __VA_ARGS__
+
+#ifdef ENTROPY_CPP17
+#define ENTROPY_FALLTHROUGH [[fallthrough]];
+#else
+#define ENTROPY_FALLTHROUGH
+#endif
 
 namespace Entropy
 {
