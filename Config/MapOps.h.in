@@ -1,0 +1,86 @@
+// Copyright (c) Entropy Software LLC
+// This file is licensed under the MIT License.
+// See the LICENSE file in the project root for more information.
+
+#pragma once
+
+#cmakedefine ENTROPY_CORE_USE_CUSTOM_MAP_TYPE
+
+#ifdef ENTROPY_CORE_USE_CUSTOM_MAP_TYPE
+@ENTROPY_CORE_CUSTOM_MAP_INCLUDES@
+#else
+
+#include <unordered_map>
+#include "Entropy/Core/Details/AllocatorTraits.h"
+
+namespace Entropy
+{
+
+struct MapOps
+{
+    template <typename TKey, typename TValue>
+    using MapType = std::unordered_map<TKey, TValue, std::hash<TKey>, std::equal_to<TKey>,
+                                       typename Traits::AllocatorTraits<std::pair<const TKey, TValue>>::Allocator>;
+
+    template <typename TKey, typename TValue>
+    inline static int GetCount(const MapType<TKey, TValue>& map) noexcept
+    {
+        return (int)map.size();
+    }
+
+    template <typename TKey, typename TValue>
+    inline static bool TryGetValue(const MapType<TKey, TValue>& map, const TKey& key, TValue* outValue) noexcept
+    {
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            return false;
+        }
+
+        *outValue = it->second;
+
+        return true;
+    }
+
+    template <typename TKey, typename TValue>
+    inline static bool TryGetValue(const MapType<TKey, TValue>& map, const TKey& key, const TValue** outValue) noexcept
+    {
+        auto it = map.find(key);
+        if (it == map.end())
+        {
+            return false;
+        }
+
+        *outValue = &it->second;
+
+        return true;
+    }
+
+    template <typename TKey, typename TValue>
+    inline static void AddUnique(MapType<TKey, TValue>& map, const TKey& key, const TValue& value)
+    {
+        map.emplace(key, value);
+    }
+
+    template <typename TKey, typename TValue>
+    inline static void AddUnique(MapType<TKey, TValue>& map, const TKey& key, TValue&& value)
+    {
+        map.emplace(key, std::move(value));
+    }
+
+    template <typename TKey, typename TValue>
+    inline static void AddOrUpdate(MapType<TKey, TValue>& map, const TKey& key, const TValue& value)
+    {
+        map[key] = value;
+    }
+
+    template <typename TKey, typename TValue>
+    inline static void AddOrUpdate(MapType<TKey, TValue>& map, const TKey& key, TValue&& value)
+    {
+        map[key] = std::move(value);
+    }
+};
+
+}
+
+#endif
