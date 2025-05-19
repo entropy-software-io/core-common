@@ -30,8 +30,8 @@ struct MakeTypeNameFn
 template <typename TFn, typename T>
 struct MakeTypeNameFn<TFn, T,
                       typename std::enable_if<!std::is_function<typename std::remove_pointer<T>::type>::value &&
-                                              !std::is_member_function_pointer<T>::value && std::is_const<T>::value &&
-                                              !std::is_pointer<T>::value && !std::is_array<T>::value>::type>
+                                              !std::is_member_function_pointer<T>::value && !std::is_array<T>::value &&
+                                              std::is_const<T>::value>::type>
 {
     StringOps::StringType operator()(TFn fn) const
     {
@@ -51,21 +51,6 @@ struct MakeTypeNameFn<TFn, T,
     {
         StringOps::StringType ret = MakeTypeNameFn<TFn, typename std::remove_pointer<T>::type>{}(fn);
         StringOps::Append(ret, "*");
-        return ret;
-    }
-};
-
-template <typename TFn, typename T>
-struct MakeTypeNameFn<TFn, T,
-                      typename std::enable_if<!std::is_function<typename std::remove_pointer<T>::type>::value &&
-                                              !std::is_member_function_pointer<T>::value && std::is_const<T>::value &&
-                                              std::is_pointer<T>::value>::type>
-{
-    StringOps::StringType operator()(TFn fn) const
-    {
-        // remove_pointer removes const too
-        StringOps::StringType ret = MakeTypeNameFn<TFn, typename std::remove_pointer<T>::type>{}(fn);
-        StringOps::Append(ret, "*const");
         return ret;
     }
 };
@@ -224,6 +209,19 @@ struct MakeTypeNameFn<TFn, TRetVal (*)(TParams...)>
     {
         StringOps::StringType ret = MakeTypeNameFn<TFn, TRetVal>{}(fn);
         StringOps::Append(ret, " (*)(");
+        StringOps::Append(ret, MakeTypeNameTemplateParamFn<TFn, TParams...>{}(fn));
+        StringOps::Append(ret, ")");
+        return ret;
+    }
+};
+
+template <typename TFn, typename TRetVal, typename... TParams>
+struct MakeTypeNameFn<TFn, TRetVal(TParams...)>
+{
+    StringOps::StringType operator()(TFn fn) const
+    {
+        StringOps::StringType ret = MakeTypeNameFn<TFn, TRetVal>{}(fn);
+        StringOps::Append(ret, " (");
         StringOps::Append(ret, MakeTypeNameTemplateParamFn<TFn, TParams...>{}(fn));
         StringOps::Append(ret, ")");
         return ret;
