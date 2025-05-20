@@ -207,6 +207,16 @@ inline bool IsNull(const T& val)
     return details::IsNullCheck<T>{}(val);
 }
 
+//----------------
+
+// Can be used in partial template declarations when you need to modify types but can't use the "typename foo<T>::type"
+// syntax directly.
+//
+// E.g. when you want "~T()", but you need to do it on "typename std::remove_reference<T>::type". You
+// can now do "~Alias<typename std::remove_reference<T>::type>()"
+template <typename T>
+using Alias = T;
+
 } // namespace Traits
 
 } // namespace Entropy
@@ -227,9 +237,9 @@ struct integer_sequence
 template <class _Ty, _Ty _Size>
 using make_integer_sequence
 #if __has_builtin(__make_integer_seq)
-      = __make_integer_seq<integer_sequence, _Ty, _Size>;
+    = __make_integer_seq<integer_sequence, _Ty, _Size>;
 #else
-      = integer_sequence<_Ty, __integer_pack(_Size)...>;
+    = integer_sequence<_Ty, __integer_pack(_Size)...>;
 #endif
 
 template <size_t... _Vals>
