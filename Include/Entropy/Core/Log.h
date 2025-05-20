@@ -60,6 +60,7 @@ struct LogMessageDelimiter
 } // namespace Entropy
 
 #define ENTROPY_LOG(Level, msg)                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
         auto* __o = ::Entropy::Log::GetStream(::Entropy::LogLevel::Level);                                             \
         if (__o)                                                                                                       \
@@ -69,16 +70,17 @@ struct LogMessageDelimiter
                    << "::" << __func__ << "(" << __LINE__ << ") - " << msg                                             \
                    << ::Entropy::details::LogMessageDelimiter();                                                       \
         }                                                                                                              \
-    }
+    } while (false)
 
 #define ENTROPY_LOG_FUNC(Level, msg)                                                                                   \
+    do                                                                                                                 \
     {                                                                                                                  \
         auto* __o = ::Entropy::Log::GetStream(::Entropy::LogLevel::Level);                                             \
         if (__o)                                                                                                       \
         {                                                                                                              \
             (*__o) << __func__ << "(" << __LINE__ << ") - " << msg << ::Entropy::details::LogMessageDelimiter();       \
         }                                                                                                              \
-    }
+    } while (false)
 
 #define ENTROPY_LOG_ERROR(msg) ENTROPY_LOG(Error, msg)
 #define ENTROPY_LOG_ERROR_FUNC(msg) ENTROPY_LOG_FUNC(Error, msg)
@@ -90,52 +92,70 @@ struct LogMessageDelimiter
 #define ENTROPY_LOG_INFO_FUNC(msg) ENTROPY_LOG_FUNC(Info, msg)
 
 #define ENTROPY_CHECK_RETURN(x, msg)                                                                                   \
-    if (ENTROPY_UNLIKELY(!(x)))                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR(msg);                                                                                        \
-        return;                                                                                                        \
-    }
+        if (ENTROPY_UNLIKELY(!(x)))                                                                                    \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR(msg);                                                                                    \
+            return;                                                                                                    \
+        }                                                                                                              \
+    } while (false)
 
 #define ENTROPY_CHECK_RETURN_FUNC(x, msg)                                                                              \
-    if (ENTROPY_UNLIKELY(!(x)))                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR_FUNC(msg);                                                                                   \
-        return;                                                                                                        \
-    }
+        if (ENTROPY_UNLIKELY(!(x)))                                                                                    \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR_FUNC(msg);                                                                               \
+            return;                                                                                                    \
+        }                                                                                                              \
+    } while (false)
 
 #define ENTROPY_CHECK_RETURN_VAL(x, r, msg)                                                                            \
-    if (ENTROPY_UNLIKELY(!(x)))                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR(msg);                                                                                        \
-        return r;                                                                                                      \
-    }
+        if (ENTROPY_UNLIKELY(!(x)))                                                                                    \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR(msg);                                                                                    \
+            return r;                                                                                                  \
+        }                                                                                                              \
+    } while (false)
 
 #define ENTROPY_CHECK_RETURN_VAL_FUNC(x, r, msg)                                                                       \
-    if (ENTROPY_UNLIKELY(!(x)))                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR_FUNC(msg);                                                                                   \
-        return r;                                                                                                      \
-    }
+        if (ENTROPY_UNLIKELY(!(x)))                                                                                    \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR_FUNC(msg);                                                                               \
+            return r;                                                                                                  \
+        }                                                                                                              \
+    } while (false)
 
 #ifdef ENTROPY_DEBUG
 #include <cassert>
 
 #ifndef ENTROPY_ASSERT
 #define ENTROPY_ASSERT(...)                                                                                            \
-    if (ENTROPY_UNLIKELY(!(__VA_ARGS__)))                                                                              \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR_FUNC("Assertion failed: " << #__VA_ARGS__);                                                  \
-        assert(false);                                                                                                 \
-    }
+        if (ENTROPY_UNLIKELY(!(__VA_ARGS__)))                                                                          \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR_FUNC("Assertion failed: " << #__VA_ARGS__);                                              \
+            assert(false);                                                                                             \
+        }                                                                                                              \
+    } while (false)
 #endif
 
 #ifndef ENTROPY_ASSERT_MSG
 #define ENTROPY_ASSERT_MSG(x, msg)                                                                                     \
-    if (ENTROPY_UNLIKELY(!(x)))                                                                                        \
+    do                                                                                                                 \
     {                                                                                                                  \
-        ENTROPY_LOG_ERROR_FUNC("Assertion failed: " << msg);                                                           \
-        assert(false);                                                                                                 \
-    }
+        if (ENTROPY_UNLIKELY(!(x)))                                                                                    \
+        {                                                                                                              \
+            ENTROPY_LOG_ERROR_FUNC("Assertion failed: " << msg);                                                       \
+            assert(false);                                                                                             \
+        }                                                                                                              \
+    } while (false)
 #endif
 #else
 #ifndef ENTROPY_ASSERT
