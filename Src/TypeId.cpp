@@ -33,6 +33,11 @@ StringOps::StringType MakeTypeNameFromRawName(const char* rawTypeName)
     free(realName);
     StringOps::Replace(ret, ", ", ",");
     StringOps::Replace(ret, "::__2::", "::");
+
+#ifdef ENTROPY_GCC
+    StringOps::Replace(ret, "long long", "__int64");
+#endif
+
     return ret;
 #endif
 }
