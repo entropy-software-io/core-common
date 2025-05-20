@@ -7,6 +7,7 @@
 #include "Entropy/Core/Details/Defines.h"
 #include "Entropy/Core/Details/StringOps.h"
 #include "Entropy/Core/Details/StrongAlias.h"
+#include <typeinfo>
 
 namespace Entropy
 {

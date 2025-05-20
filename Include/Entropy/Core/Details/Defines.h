@@ -45,6 +45,12 @@
 #undef ENTROPY_MSVC
 #endif
 
+#ifdef __GNUG__
+#define ENTROPY_GCC
+#else
+#undef ENTROPY_GCC
+#endif
+
 #ifdef _DEBUG
 #define ENTROPY_DEBUG
 #endif

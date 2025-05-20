@@ -225,7 +225,12 @@ struct integer_sequence
 };
 
 template <class _Ty, _Ty _Size>
-using make_integer_sequence = __make_integer_seq<integer_sequence, _Ty, _Size>;
+using make_integer_sequence
+#if __has_builtin(__make_integer_seq)
+      = __make_integer_seq<integer_sequence, _Ty, _Size>;
+#else
+      = integer_sequence<_Ty, __integer_pack(_Size)...>;
+#endif
 
 template <size_t... _Vals>
 using index_sequence = integer_sequence<size_t, _Vals...>;
